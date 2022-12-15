@@ -1,13 +1,13 @@
-//
-
 import java.util.Stack;
+import java.util.*;
+import java.io.*;
 import org.w3c.dom.ls.LSException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Scanner;
-public class FileTransformer {
+public class FileAnalysis {
 
 	public static void main(String[] args) throws FileNotFoundException {
 
@@ -23,34 +23,39 @@ public class FileTransformer {
 		try {
 			// File reader
 			Scanner reader = new Scanner(sourceFile);
+            String readerString = null;
 			// File writer
 			writer = new PrintWriter(targetFile);
-			Stack<String> newStack = new Stack<String>();
-			Stack<String> revStack = new Stack<String>();
+			HashMap<Character, Integer> map = new HashMap<Character, Integer>();
 
 			while (reader.hasNext()) {
                 //System.out.println(reader.nextLine());
-				String[] strings = reader.nextLine().split(" ");
+                readerString = reader.nextLine();
+				char[] chars = readerString.toCharArray();
 
-				for(String newString: strings) {
-					newStack.push(newString);
-				}
-				for(int x = 0; x<strings.length;x++) {
-					revStack.push(newStack.pop());
-				}
+				for(char newChar: chars) {
+					if(map.containsKey(newChar)) {
 
-				System.out.println(revStack.toString());
-				newStack.clear();
-				revStack.clear();
+						map.put(newChar, map.get(newChar) + 1);
+
+                    }else {
+                        map.put(newChar, 1);
+                    }
+				}
 
 			}
+
+			for (Map.Entry newEntry: map.entrySet()) {
+				System.out.println(newEntry.getKey() + " : " + newEntry.getValue());
+
+		}
 
             System.out.println("Success");
 
             reader.close();
 
 		} catch (ArrayIndexOutOfBoundsException aiobe){
-            System.out.println(aiobe);
+            System.out.println("File already exists, use -f option to force overwrite.");
         }
 		finally {
 			if(writer!=null)writer.close();
